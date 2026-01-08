@@ -1,0 +1,32 @@
+name: Daily Job Finder Bot
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # یہ روزانہ خود چلے گا
+  workflow_dispatch: # اس سے آپ ابھی بٹن دبا کر چلا سکیں گے
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Install libraries
+        run: pip install requests beautifulsoup4
+
+      - name: Run bot
+        run: python main.py
+
+      - name: Save result
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add latest_jobs.txt
+          git commit -m "Updated jobs list" || echo "No changes to commit"
+          git push
